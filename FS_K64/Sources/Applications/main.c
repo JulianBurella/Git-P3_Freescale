@@ -168,7 +168,7 @@ int main(void)
 	// UART 3 module configuration et start --> wifi autobaud
 	// UART4 !!! Attention nécessaire pour utiliser le RS232
 	mWifi_Setup();
-	//mWifi_Open();
+	mWifi_Open();
 	
 	// UART 4 monitoring image
 	mRs232_Setup();

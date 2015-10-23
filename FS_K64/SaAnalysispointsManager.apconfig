@@ -1,14 +1,14 @@
 <Analysispoints>
 	<Name>AnalysispointsManager</Name>
-    <ProjectPath></ProjectPath>
-    <MaxNumberOfCores>1</MaxNumberOfCores>
+	<ProjectPath>C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/SaAnalysispointsManager.apconfig</ProjectPath>
+	<MaxNumberOfCores>1</MaxNumberOfCores>
 	<Comments>Analysispoints Manager</Comments>
 	<IgnoreAll>false</IgnoreAll>
 	<SpecializedManager>
 		<Name>ARMTracepointsManager</Name>
 		<Comments>ARM Tracepoints Manager</Comments>
 	</SpecializedManager>
-    <Core>
+	<Core>
 		<Name>0</Name>
-    </Core>
+	</Core>
 </Analysispoints>
