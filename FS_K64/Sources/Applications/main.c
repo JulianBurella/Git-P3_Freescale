@@ -231,13 +231,13 @@ int main(void)
 	// Init:
 	aRet=mWifi_SendCmd("at+rsi_init\r\n");
 	// Network Type: AdHoc, canal 6
-	// !! Chaque équipe prend un canal différent, ici 6
-	aRet=mWifi_SendCmd("at+rsi_network=IBSS_SEC,1,6\r\n");
+	// !! Chaque équipe prend un canal différent, ici 3
+	aRet=mWifi_SendCmd("at+rsi_network=IBSS_SEC,1,3\r\n");
 	// Set PSK: 
 	aRet=mWifi_SendCmd("at+rsi_psk=12345ABCDE\r\n");
 	// Create IBSS network: 
 	// Chaque équipe avec un non différent
-	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_RL,0,2\r\n");
+	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_JL,0,2\r\n");
 	// IP Address Configuration (DHCP Manual): 
 	aRet=mWifi_SendCmd("at+rsi_ipconf=0,192.168.1.176,255.255.255.0,192.168.1.1\r\n");
 	// Open a server TCP socket in the module sur le port 5001
