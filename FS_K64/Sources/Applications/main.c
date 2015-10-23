@@ -102,6 +102,11 @@ void InitDataJava(void);
 //Maybe not enough
 //I don't know if it is enough
 
+
+
+
+//test julian2
+
 //-------------------------------------------------------------------------
 // Programme principal
 //-------------------------------------------------------------------------
