@@ -103,8 +103,6 @@ void InitDataJava(void);
 //I don't know if it is enough
 
 
-
-
 //test julian2
 
 //-------------------------------------------------------------------------
