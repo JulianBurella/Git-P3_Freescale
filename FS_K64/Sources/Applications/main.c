@@ -120,7 +120,6 @@ int main(void)
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
-	static UInt16 VarInutile;
 	
 	//--------------------------------------------------------------------
 	// Initialisation du protocole ST pour la comm wifi
