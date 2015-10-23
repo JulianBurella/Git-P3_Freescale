@@ -226,7 +226,7 @@ int main(void)
 	// --> WEP, 12345ABCDE
 	//--------------------------------------------------------------------
 	// Sélection de la bande:
-	/*
+	
 	aRet=mWifi_SendCmd("at+rsi_band=0\r\n");
 	// Init:
 	aRet=mWifi_SendCmd("at+rsi_init\r\n");
@@ -237,13 +237,13 @@ int main(void)
 	aRet=mWifi_SendCmd("at+rsi_psk=12345ABCDE\r\n");
 	// Create IBSS network: 
 	// Chaque équipe avec un non différent
-	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_C6,0,2\r\n");
+	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_RL,0,2\r\n");
 	// IP Address Configuration (DHCP Manual): 
 	aRet=mWifi_SendCmd("at+rsi_ipconf=0,192.168.1.176,255.255.255.0,192.168.1.1\r\n");
 	// Open a server TCP socket in the module sur le port 5001
 	aRet=mWifi_SendCmd("at+rsi_ltcp=5001\r\n");
 	// On vide le buffer
-	while(mWifi_SciReadDataFromBuffer(&aChar)==false);*/
+	while(mWifi_SciReadDataFromBuffer(&aChar)==false);
 	
 	// Pour les tests
 	sDly=mDelay_GetDelay(kPit1,500/kPit1Period);
@@ -395,27 +395,27 @@ int main(void)
 						//Envoie de la vitesse sur l'UART4 pour l'afficer sur le terminal
 						if(mSwitch_ReadSwitch(kSw3)){
 								//sUartMessage // Buffer pour stocker le message
-								mRs232_Uart4WriteChar(0x1B);
-								mRs232_Uart4WriteChar('[');
-								mRs232_Uart4WriteChar('H');//Pour remmetre au début de la ligne
-								mDelay_DelayMs(20);
-								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,aDuty,aValueIntegration);
-								mRs232_Uart4WriteString(sUartMessage);
-
-								//Efface tout le tableau sUartMessage et j'y mets comme première élément le nombre à l'indice 0
-								sprintf(sUartMessage,"%3d", sImageTab[0]);
-								for(i=1;i<(sizeof(sImageTab)-2);i++){
-										sprintf(aChar,",%3d", sImageTab[i]);
-										strcat(sUartMessage, aChar);
-								}
-								mRs232_Uart4WriteString("Ce que la camera voit:\n\r");
-								mRs232_Uart4WriteString(sUartMessage);
-								mRs232_Uart4WriteString("\n\n\r");
-								
-								for(i=0; i<sizeof(sUartMessage); i++){
-										sUartMessage[i]='\0';
-								}
-								
+//								mRs232_Uart4WriteChar(0x1B);
+//								mRs232_Uart4WriteChar('[');
+//								mRs232_Uart4WriteChar('H');//Pour remmetre au début de la ligne
+//								mDelay_DelayMs(20);
+//								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,aDuty,aValueIntegration);
+//								mRs232_Uart4WriteString(sUartMessage);
+//
+//								//Efface tout le tableau sUartMessage et j'y mets comme première élément le nombre à l'indice 0
+//								sprintf(sUartMessage,"%3d", sImageTab[0]);
+//								for(i=1;i<(sizeof(sImageTab)-2);i++){
+//										sprintf(aChar,",%3d", sImageTab[i]);
+//										strcat(sUartMessage, aChar);
+//								}
+//								mRs232_Uart4WriteString("Ce que la camera voit:\n\r");
+//								mRs232_Uart4WriteString(sUartMessage);
+//								mRs232_Uart4WriteString("\n\n\r");
+//								
+//								for(i=0; i<sizeof(sUartMessage); i++){
+//										sUartMessage[i]='\0';
+//								}
+//								
 								
 								//Calcul de la dérivé !
 								/*
@@ -442,11 +442,13 @@ int main(void)
 										sUartMessage[i]='\0';
 								}
 								
-								mTimer_MotorMoveStraight(sImageDeriveTab,110);
+//								mTimer_MotorMoveStraight(sImageDeriveTab,110);
 								
 								mDelay_ReStart(kPit1,sDly,100/kPit1Period);
 						}
 						
+						
+						SendDataJava();
 						
 						// Start exposition à la lumière
 						//mSpi_MLX75306_StartIntegration_old(sIntTime);
