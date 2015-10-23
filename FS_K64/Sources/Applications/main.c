@@ -102,6 +102,10 @@ void InitDataJava(void);
 //Maybe not enough
 //I don't know if it is enough
 
+
+//Tests sur l'ordi de Loïc
+
+
 //-------------------------------------------------------------------------
 // Programme principal
 //-------------------------------------------------------------------------
@@ -116,7 +120,6 @@ int main(void)
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
-	static variable_commit_for_test = 19;
 	
 	//--------------------------------------------------------------------
 	// Initialisation du protocole ST pour la comm wifi
