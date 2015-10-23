@@ -256,7 +256,7 @@ int main(void)
 			//--------------------------------------------------------------------
 			// Selon la position de l'interrupteur 1 on passe de l'état test (si =1, voir ci-dessous) à l'état automatique
 			//--------------------------------------------------------------------
-			if(mSwitch_ReadSwitch(kSw1)==true)  
+			if(mSwitch_ReadSwitch(kSw1)==true)
 				{
 					//--------------------------------------------------------------------
 					// Config et lecture des ponts en H
