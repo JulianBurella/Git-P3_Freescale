@@ -226,7 +226,7 @@ int main(void)
 	// --> WEP, 12345ABCDE
 	//--------------------------------------------------------------------
 	// Sélection de la bande:
-	/*
+	
 	aRet=mWifi_SendCmd("at+rsi_band=0\r\n");
 	// Init:
 	aRet=mWifi_SendCmd("at+rsi_init\r\n");
@@ -237,13 +237,13 @@ int main(void)
 	aRet=mWifi_SendCmd("at+rsi_psk=12345ABCDE\r\n");
 	// Create IBSS network: 
 	// Chaque équipe avec un non différent
-	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_C6,0,2\r\n");
+	aRet=mWifi_SendCmd("at+rsi_join=FREESCALE_CUP_RL,0,2\r\n");
 	// IP Address Configuration (DHCP Manual): 
 	aRet=mWifi_SendCmd("at+rsi_ipconf=0,192.168.1.176,255.255.255.0,192.168.1.1\r\n");
 	// Open a server TCP socket in the module sur le port 5001
 	aRet=mWifi_SendCmd("at+rsi_ltcp=5001\r\n");
 	// On vide le buffer
-	while(mWifi_SciReadDataFromBuffer(&aChar)==false);*/
+	while(mWifi_SciReadDataFromBuffer(&aChar)==false);
 	
 	// Pour les tests
 	sDly=mDelay_GetDelay(kPit1,500/kPit1Period);
@@ -395,27 +395,27 @@ int main(void)
 						//Envoie de la vitesse sur l'UART4 pour l'afficer sur le terminal
 						if(mSwitch_ReadSwitch(kSw3)){
 								//sUartMessage // Buffer pour stocker le message
-								mRs232_Uart4WriteChar(0x1B);
-								mRs232_Uart4WriteChar('[');
-								mRs232_Uart4WriteChar('H');//Pour remmetre au début de la ligne
-								mDelay_DelayMs(20);
-								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,aDuty,aValueIntegration);
-								mRs232_Uart4WriteString(sUartMessage);
-
-								//Efface tout le tableau sUartMessage et j'y mets comme première élément le nombre à l'indice 0
-								sprintf(sUartMessage,"%3d", sImageTab[0]);
-								for(i=1;i<(sizeof(sImageTab)-2);i++){
-										sprintf(aChar,",%3d", sImageTab[i]);
-										strcat(sUartMessage, aChar);
-								}
-								mRs232_Uart4WriteString("Ce que la camera voit:\n\r");
-								mRs232_Uart4WriteString(sUartMessage);
-								mRs232_Uart4WriteString("\n\n\r");
-								
-								for(i=0; i<sizeof(sUartMessage); i++){
-										sUartMessage[i]='\0';
-								}
-								
+//								mRs232_Uart4WriteChar(0x1B);
+//								mRs232_Uart4WriteChar('[');
+//								mRs232_Uart4WriteChar('H');//Pour remmetre au début de la ligne
+//								mDelay_DelayMs(20);
+//								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,aDuty,aValueIntegration);
+//								mRs232_Uart4WriteString(sUartMessage);
+//
+//								//Efface tout le tableau sUartMessage et j'y mets comme première élément le nombre à l'indice 0
+//								sprintf(sUartMessage,"%3d", sImageTab[0]);
+//								for(i=1;i<(sizeof(sImageTab)-2);i++){
+//										sprintf(aChar,",%3d", sImageTab[i]);
+//										strcat(sUartMessage, aChar);
+//								}
+//								mRs232_Uart4WriteString("Ce que la camera voit:\n\r");
+//								mRs232_Uart4WriteString(sUartMessage);
+//								mRs232_Uart4WriteString("\n\n\r");
+//								
+//								for(i=0; i<sizeof(sUartMessage); i++){
+//										sUartMessage[i]='\0';
+//								}
+//								
 								
 								//Calcul de la dérivé !
 								/*
@@ -442,11 +442,13 @@ int main(void)
 										sUartMessage[i]='\0';
 								}
 								
-								mTimer_MotorMoveStraight(sImageDeriveTab,110);
+//								mTimer_MotorMoveStraight(sImageDeriveTab,110);
 								
 								mDelay_ReStart(kPit1,sDly,100/kPit1Period);
 						}
 						
+						
+						SendDataJava();
 						
 						// Start exposition à la lumière
 						//mSpi_MLX75306_StartIntegration_old(sIntTime);
@@ -490,20 +492,10 @@ typedef struct
 	Int16 ConsSpeedRight;
 	Int16 ConsServo;
 	Int16 ConsLed;
-	float sYaw;
-	float sRoll;
-	float sPitch;
-	float AccelX;
-	float AccelY;
-	float AccelZ;
 	float ResFloat1;
 	float ResFloat2;
-	float ResFloat3;
-	float ResFloat4;
 	Int16 ResInt161;
 	Int16 ResInt162;
-	Int16 ResInt163;
-	Int16 ResInt164;
 }SendFrame1Struct;
 
 static SendFrame1Struct sFrameTxJava1;
@@ -518,20 +510,10 @@ typedef struct
 	Int16 ConsSpeedRight;
 	Int16 ConsServo;
 	Int16 ConsLed;
-	float sYaw;
-	float sRoll;
-	float sPitch;
-	float AccelX;
-	float AccelY;
-	float AccelZ;
 	float ResFloat1;
 	float ResFloat2;
-	float ResFloat3;
-	float ResFloat4;
 	Int16 ResInt161;
 	Int16 ResInt162;
-	Int16 ResInt163;
-	Int16 ResInt164;
 	UInt8 ImageTab[143];
 }SendFrame2Struct;
 
@@ -758,39 +740,39 @@ void SendDataJava(void)
 					sLedOn1=true;
 				}
 			
-			// ------------------------------------------------------------
-			// Test d'envoi d'une trame WIFI avec le protocole ST
-			// ------------------------------------------------------------
-			// On simule des signaux à l'aide d'une sinus par-exemple
-			sFrameTxJava1.SpeedLeft=sSinusTab[sSinIndex];
-			sFrameTxJava1.SpeedRight=sSinusTab[sSinIndex]*1.3;
-			sFrameTxJava1.ConsSpeedLeft+=50;
-			sFrameTxJava1.ConsSpeedRight+=60;
-			sFrameTxJava1.ConsServo+=1;
-			sFrameTxJava1.ConsLed+=2000;
-			sFrameTxJava1.sYaw=sSinusTab[sSinIndex]*1.5;
-			sFrameTxJava1.sRoll=sSinusTab[sSinIndex]*1.7;
-			sFrameTxJava1.sPitch=sSinusTab[sSinIndex]*2;
-			sFrameTxJava1.AccelX=sSinusTab[sSinIndex]*2.2;
-			sFrameTxJava1.AccelY=sSinusTab[sSinIndex]*2.4;
-			sFrameTxJava1.AccelZ=sSinusTab[sSinIndex]*2.6;
-			sFrameTxJava1.ResFloat1=sSinusTab[sSinIndex]*2.8;
-			sFrameTxJava1.ResFloat2=sSinusTab[sSinIndex]*3;
-			sFrameTxJava1.ResFloat3=sSinusTab[sSinIndex]*3.2;
-			sFrameTxJava1.ResFloat4=sSinusTab[sSinIndex]*3.4;
-			sFrameTxJava1.ResInt161+=12;
-			sFrameTxJava1.ResInt162+=22;
-			sFrameTxJava1.ResInt163=0;
-			sFrameTxJava1.ResInt164=0xFFFF;
-			
-			sSinIndex++;
-			if(sSinIndex>=25)
-				{
-					sSinIndex=0;
-				}
-			
-			// Codage et transmission de la trame
-			stbpSendFrameJava1(&sFrameTxJava1);
+//			// ------------------------------------------------------------
+//			// Test d'envoi d'une trame WIFI avec le protocole ST
+//			// ------------------------------------------------------------
+//			// On simule des signaux à l'aide d'une sinus par-exemple
+//			sFrameTxJava1.SpeedLeft=sSinusTab[sSinIndex];
+//			sFrameTxJava1.SpeedRight=sSinusTab[sSinIndex]*1.3;
+//			sFrameTxJava1.ConsSpeedLeft+=50;
+//			sFrameTxJava1.ConsSpeedRight+=60;
+//			sFrameTxJava1.ConsServo+=1;
+//			sFrameTxJava1.ConsLed+=2000;
+//			sFrameTxJava1.sYaw=sSinusTab[sSinIndex]*1.5;
+//			sFrameTxJava1.sRoll=sSinusTab[sSinIndex]*1.7;
+//			sFrameTxJava1.sPitch=sSinusTab[sSinIndex]*2;
+//			sFrameTxJava1.AccelX=sSinusTab[sSinIndex]*2.2;
+//			sFrameTxJava1.AccelY=sSinusTab[sSinIndex]*2.4;
+//			sFrameTxJava1.AccelZ=sSinusTab[sSinIndex]*2.6;
+//			sFrameTxJava1.ResFloat1=sSinusTab[sSinIndex]*2.8;
+//			sFrameTxJava1.ResFloat2=sSinusTab[sSinIndex]*3;
+//			sFrameTxJava1.ResFloat3=sSinusTab[sSinIndex]*3.2;
+//			sFrameTxJava1.ResFloat4=sSinusTab[sSinIndex]*3.4;
+//			sFrameTxJava1.ResInt161+=12;
+//			sFrameTxJava1.ResInt162+=22;
+//			sFrameTxJava1.ResInt163=0;
+//			sFrameTxJava1.ResInt164=0xFFFF;
+//			
+//			sSinIndex++;
+//			if(sSinIndex>=25)
+//				{
+//					sSinIndex=0;
+//				}
+//			
+//			// Codage et transmission de la trame
+//			stbpSendFrameJava1(&sFrameTxJava1);
 			
 			// 2e frame avec l'image
 			sFrameTxJava2.SpeedLeft=101.1;
@@ -799,20 +781,10 @@ void SendDataJava(void)
 			sFrameTxJava2.ConsSpeedRight=1060;
 			sFrameTxJava2.ConsServo=11000;
 			sFrameTxJava2.ConsLed=12000;
-			sFrameTxJava2.sYaw=103.3;
-			sFrameTxJava2.sRoll=104.4;
-			sFrameTxJava2.sPitch=105.5;
-			sFrameTxJava2.AccelX=106.6;
-			sFrameTxJava2.AccelY=107.7;
-			sFrameTxJava2.AccelZ=108.8;
 			sFrameTxJava2.ResFloat1=109.9;
 			sFrameTxJava2.ResFloat2=111.1;
-			sFrameTxJava2.ResFloat3=122.2;
-			sFrameTxJava2.ResFloat4=133.3;
 			sFrameTxJava2.ResInt161=10111;
 			sFrameTxJava2.ResInt162=10222;
-			sFrameTxJava2.ResInt163=10333;
-			sFrameTxJava2.ResInt164=10444;
 			for(i=0;i<143;i++)
 				{
 					sFrameTxJava2.ImageTab[i]=i;
