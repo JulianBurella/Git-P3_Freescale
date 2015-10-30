@@ -34,13 +34,13 @@ $History: $
 #include "math.h"
 
 //Définitions de tests
-#define TabBegin 25//11
+#define TabBegin 13
 #define TabOffset 1
 
 // Tableau contenant l'image (et diverses infos) de la camera
 // digitale, le tableau test est utilisé pour l'app Labview
-static UInt8 sImageTab[150];
-static UInt8 sImageDeriveTab[150];
+static UInt8 sImageTab[200];
+static UInt8 sImageDeriveTab[200];
 
 static UInt8 sUartMessage[200];
 
@@ -85,6 +85,7 @@ typedef struct
 	int temp;
 	int time;
 }CmdMenuStruct;
+
 static CmdMenuStruct sFrameRxWifi;
 static UInt8 *sFrameRxWifiPtr=(UInt8*)&sFrameRxWifi;
 static Int16 sDlyJava;
@@ -98,13 +99,11 @@ void ReadDataJava(void);
 // Init pour la comm de l'app JAVA
 void InitDataJava(void);
 
-//Add comment fort test of commit
-//Maybe not enough
-//I don't know if it is enough
+	//Variable contenant la vitesse des moteurs
+	MotorSpeed sMotorSpeed;
 
-
-//Tests sur l'ordi de Loïc
-
+	//Variable contenant l'angle du Servo entre -0.95 et 0.65
+	float sServo_Angle=mTimer_ServoDefault;
 
 //-------------------------------------------------------------------------
 // Programme principal
@@ -116,11 +115,10 @@ int main(void)
 	static UInt16 aStatus;
 	bool aRet;
 	Int8 aChar[2];
-	float aDuty=mTimer_ServoDefault;
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
-	//dernier test
+	
 	//--------------------------------------------------------------------
 	// Initialisation du protocole ST pour la comm wifi
 	//--------------------------------------------------------------------
@@ -251,6 +249,11 @@ int main(void)
 	// Pour le test Wifi JAVA
 	sDlyJava=mDelay_GetDelay(kPit1,100/kPit1Period);
 	
+	//Enclenchement de la lumière continuellement
+	// Set DAC 0 buffer output value, entre 0 et 4095 --> driver de LEDS
+	// Entre 0 et 100% --> 0 et 1.0
+	mDac_SetDac0Output(1.0);
+	
 	for(;;)
 		{	   	
 			//--------------------------------------------------------------------
@@ -328,11 +331,7 @@ int main(void)
 					// Moteur A = moteur gauche (tr/mn)--> valeur négative = en arrière, valeur pos=en avant
 					// Moteur B = moteur droite (tr/mn)
 					//-----------------------------------------------------------------------------
-					mTimer_GetSpeed(&sSpeedMotLeft,&sSpeedMotRight);
-					
-					// Set DAC 0 buffer output value, entre 0 et 4095 --> driver de LEDS
-					// Entre 0 et 100% --> 0 et 1.0
-					mDac_SetDac0Output(1.0);
+					mTimer_GetSpeed(&(sMotorSpeed.VitesseMoteurGauche),&(sMotorSpeed.VitesseMoteurDroite));
 					
 					// Selon la position des interrupteurs (interrupteur 2 et 3) on teste les poussoirs, le servo, les moteurs DC et la camera
 					if(mDelay_IsDelayDone(kPit1,sDly)==true)
@@ -346,25 +345,25 @@ int main(void)
 							// Les 2 boutons poussoirs permettent de bouger dans un sens et dans l'autre
 							if(mSwitch_ReadPushBut(kPushButSW1)==true)//Tourner à droite
 								{
-									aDuty+=0.05;
-									if(aDuty>mTimer_ServoMaxPosition)
+									sServo_Angle+=0.05;
+									if(sServo_Angle>kServoMinPosition)
 										{
-											aDuty=mTimer_ServoMaxPosition;
+											sServo_Angle=kServoMinPosition;
 										}
-									mTimer_SetServoDuty(0,aDuty);
+									mTimer_SetServoDuty(0,sServo_Angle);
 								}
 							else if(mSwitch_ReadPushBut(kPushButSW2)==true)//Tourner à gauche
 								{
-									aDuty-=0.05;
-									if(aDuty<mTimer_ServoMinPosition)
+									sServo_Angle-=0.05;
+									if(sServo_Angle<kServoMinPosition)
 										{
-											aDuty=mTimer_ServoMinPosition;
+											sServo_Angle=kServoMinPosition;
 										}
-									mTimer_SetServoDuty(0,aDuty);
+									mTimer_SetServoDuty(0,sServo_Angle);
 								}
 							else
 								{
-									aDuty=mTimer_ServoDefault;
+									//sServo_Angle=mTimer_ServoDefault;
 									//mTimer_SetServoDuty(0,mTimer_ServoDefault);
 								}
 						
@@ -381,15 +380,28 @@ int main(void)
 						else
 							{
 								//sIntTime=mAd_ReadCamera(kPot1);
-								mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
+								//mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
 							}
 						
-						//Faire une lecture de la caméra.
-						aValueIntegration = (mAd_Read(kPot1)+1)*3;
+						
+
+						//Quand j'active ce button la voiture va réguler et avancer
 						if(mSwitch_ReadSwitch(kSw4)){
+								//Faire une lecture de la caméra.
+								aValueIntegration = (mAd_Read(kPot1)+1)*3;
+								
 								mSpi_MLX75306_StartIntegration(aValueIntegration);//Une valeur de 0 -> 6
 								mSpi_MLX75306_ReadPicture(sImageTab);
+								
+								
+								for(i=0;i<129;i++){//142-13
+										sImageDeriveTab[i] = abs(sImageTab[TabBegin+i*TabOffset]-sImageTab[TabBegin+i*TabOffset+TabOffset]);
+								}
+								
+								mTimer_MotorMoveStraight(sImageDeriveTab,129, aMotorSpeed);
 						}
+						
+						
 						
 						
 						//Envoie de la vitesse sur l'UART4 pour l'afficer sur le terminal
@@ -399,7 +411,7 @@ int main(void)
 //								mRs232_Uart4WriteChar('[');
 //								mRs232_Uart4WriteChar('H');//Pour remmetre au début de la ligne
 //								mDelay_DelayMs(20);
-//								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,aDuty,aValueIntegration);
+//								sprintf(sUartMessage, "Pot1: %.3f\tPot2: %.3f\n\rVitesse moteur Gauche: %.3f\n\rVitesse moteur droite: %.3f\n\rPosition du Servo: %.3f\n\rValeur de l'integration: %1.2f\n\n\r",mAd_Read(kPot1),mAd_Read(kPot2),sSpeedMotLeft,sSpeedMotRight,sServo_Angle,aValueIntegration);
 //								mRs232_Uart4WriteString(sUartMessage);
 //
 //								//Efface tout le tableau sUartMessage et j'y mets comme première élément le nombre à l'indice 0
@@ -425,7 +437,7 @@ int main(void)
 								 */
 
 								//On initialise le tableau avec une valeur // 11 = 8+3, le 8 3 vient que les 3 premiers bytes ne me servent à rien
-								sImageDeriveTab[0] =sImageTab[TabBegin]-sImageTab[TabBegin+TabOffset];
+								/*sImageDeriveTab[0] =sImageTab[TabBegin]-sImageTab[TabBegin+TabOffset];
 								//On initialise la le tableau pour envoyer le texte
 								sprintf(sUartMessage,"%3d", sImageDeriveTab[0]);
 								
@@ -440,40 +452,13 @@ int main(void)
 								
 								for(i=0; i<sizeof(sUartMessage); i++){
 										sUartMessage[i]='\0';
-								}
+								}			*/				
 								
-//								mTimer_MotorMoveStraight(sImageDeriveTab,110);
 								
-								mDelay_ReStart(kPit1,sDly,100/kPit1Period);
 						}
 						
-						
-						SendDataJava();
-						
-						// Start exposition à la lumière
-						//mSpi_MLX75306_StartIntegration_old(sIntTime);
-														
-						// Test de la caméra
-						//mSpi_MLX75306_ReadPictureTest(sImageTabTest);
-												 
-						/*mRs232_Uart4WriteString("\r\n");
-						mRs232_Uart4WriteString("L:");
-						
-						for(i=0;i<143;i++)
-							{
-								sprintf(aCharTab,"%X,",sImageTabTest[13+i]);
-								mRs232_Uart4WriteString(aCharTab);
-							}
-									
-						 for(i=0;i<143;i++)
-							 {
-								 sprintf(aCharTab,"%X",sImageTabTest[13+i]);
-								 mRs232_Uart4WriteString(aCharTab);
-								 if(i==143)
-									 mRs232_Uart4WriteString("\r\n");
-								 else
-									 mRs232_Uart4WriteString(",");
-							 }*/													
+							mDelay_ReStart(kPit1,sDly,100/kPit1Period);
+							SendDataJava();																			
 						}
 					}
 			}
@@ -508,7 +493,7 @@ typedef struct
 	float SpeedRight;
 	Int16 ConsSpeedLeft;
 	Int16 ConsSpeedRight;
-	Int16 ConsServo;
+	float ConsServo;
 	Int16 ConsLed;
 	float ResFloat1;
 	float ResFloat2;
@@ -518,35 +503,6 @@ typedef struct
 }SendFrame2Struct;
 
 static SendFrame2Struct sFrameTxJava2;
-
-static float sSinusTab[25]=
-{
-	1,
-	1.248689887,
-	1.481753674,
-	1.684547106,
-	1.844327926,
-	1.951056516,
-	1.998026728,
-	1.982287251,
-	1.904827052,
-	1.770513243,
-	1.587785252,
-	1.368124553,
-	1.125333234,
-	0.874666766,
-	0.631875447,
-	0.412214748,
-	0.229486757,
-	0.095172948,
-	0.017712749,
-	0.001973272,
-	0.048943484,
-	0.155672074,
-	0.315452894,
-	0.518246326,
-	0.751310113
-};
 
 //-----------------------------------------------------------------------
 // Codage et envoi par WIFI à l'app JAVA
@@ -775,11 +731,11 @@ void SendDataJava(void)
 //			stbpSendFrameJava1(&sFrameTxJava1);
 			
 			// 2e frame avec l'image
-			sFrameTxJava2.SpeedLeft=101.1;
-			sFrameTxJava2.SpeedRight=102.2;
+			sFrameTxJava2.SpeedLeft= sMotorSpeed.VitesseMoteurGauche;
+			sFrameTxJava2.SpeedRight= sMotorSpeed.VitesseMoteurDroite;
 			sFrameTxJava2.ConsSpeedLeft=1050;
 			sFrameTxJava2.ConsSpeedRight=1060;
-			sFrameTxJava2.ConsServo=11000;
+			sFrameTxJava2.ConsServo=sServo_Angle;
 			sFrameTxJava2.ConsLed=12000;
 			sFrameTxJava2.ResFloat1=109.9;
 			sFrameTxJava2.ResFloat2=111.1;
@@ -787,7 +743,7 @@ void SendDataJava(void)
 			sFrameTxJava2.ResInt162=10222;
 			for(i=0;i<143;i++)
 				{
-					sFrameTxJava2.ImageTab[i]=i;
+					sFrameTxJava2.ImageTab[i]= sImageTab[i+13];
 				}
 			
 			// Codage et transmission de la trame
