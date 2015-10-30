@@ -115,7 +115,6 @@ int main(void)
 	static UInt16 aStatus;
 	bool aRet;
 	Int8 aChar[2];
-	float aDuty=kServoDefault;
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
@@ -335,8 +334,6 @@ int main(void)
 					// Moteur A = moteur gauche (tr/mn)--> valeur négative = en arrière, valeur pos=en avant
 					// Moteur B = moteur droite (tr/mn)
 					//-----------------------------------------------------------------------------
-					mTimer_GetSpeed(&(aMotorSpeed.VitesseMoteurGauche),&(aMotorSpeed.VitesseMoteurDroite));
-					
 					mTimer_GetSpeed(&(sMotorSpeed.VitesseMoteurGauche),&(sMotorSpeed.VitesseMoteurDroite));
 					
 					// Selon la position des interrupteurs (interrupteur 2 et 3) on teste les poussoirs, le servo, les moteurs DC et la camera
