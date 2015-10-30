@@ -110,6 +110,12 @@ typedef struct
 	UInt16 Index;
 }ReadFramestruct;
 
+//Structure pour la vitesse
+typedef struct{
+	float VitesseMoteurGauche;
+	float VitesseMoteurDroite;
+}MotorSpeed;
+
 void enable_irq (int irq);
 
 /***********************************************************************/
