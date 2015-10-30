@@ -61,7 +61,7 @@ void mTimer_Close(void)
 // Lecture de la vitesse de rotation des moteurs
 // Moteur A = moteur gauche --> valeur négative = en arrière, valeur pos=en avant
 // Moteur B = moteur droite
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void mTimer_GetSpeed(float *aSpeedMotLeft,float *aSpeedMotRight)
 {
 	iFlextimer_GetSpeed(aSpeedMotLeft, aSpeedMotRight);
