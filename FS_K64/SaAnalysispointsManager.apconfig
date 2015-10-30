@@ -1,6 +1,6 @@
 <Analysispoints>
 	<Name>AnalysispointsManager</Name>
-	<ProjectPath>C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/SaAnalysispointsManager.apconfig</ProjectPath>
+	<ProjectPath>C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/SaAnalysispointsManager.apconfig</ProjectPath>
 	<MaxNumberOfCores>1</MaxNumberOfCores>
 	<Comments>Analysispoints Manager</Comments>
 	<IgnoreAll>false</IgnoreAll>
