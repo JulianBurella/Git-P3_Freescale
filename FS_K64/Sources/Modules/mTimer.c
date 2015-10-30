@@ -241,8 +241,10 @@ static double mTimer_ForwardRegulationDirection(double aOldValuePosition, Int8 a
  */
 bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed){
 		//Valeurs de la commande de la vitesse des moteurs.
-		static float aSpeedLeftCmd;
-		static float aSpeedRightCmd;
+		static float aSpeedLeftCmd=0;
+		static float aSpeedRightCmd=0;
+		
+		bool valueReturn=true;
 		
 		//Sécurité
 		if(aCmdVitesse > 100)
@@ -251,20 +253,29 @@ bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed){
 		if(aCmdVitesse < 0)
 			aCmdVitesse = 0;
 		
+		//Moteur Gauche
 		//La vitesse max est de 5500
 		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
 		if(aMotorSpeed.VitesseMoteurGauche < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
-				
+				aSpeedLeftCmd += ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurGauche))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+				valueReturn = false;
 		}else if(aMotorSpeed.VitesseMoteurGauche > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
-				
-		}
-		
+				aSpeedLeftCmd -= ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurGauche))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+				valueReturn = false;
+		}else 
+			valueReturn = (true==valueReturn)?true:false;//Contrôle que la variable ne soit pas false d'avant
+			
+		//Moteur Droite
 		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
 		if(aMotorSpeed.VitesseMoteurDroite < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
-				
+				aSpeedRightCmd += ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurDroite))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
 		}else if(aMotorSpeed.VitesseMoteurDroite > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
-				
-		}
+				aSpeedRightCmd -= ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurDroite))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+		}else
+			valueReturn = (true==valueReturn)?true:false;//Contrôle que la variable ne soit pas false d'avant
 		
-		return false;
+		
+		mTimer_SetMotorDuty(aSpeedLeftCmd, aSpeedRightCmd);
+		
+		return valueReturn;
 }
