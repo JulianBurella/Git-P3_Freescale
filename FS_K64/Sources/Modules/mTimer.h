@@ -29,11 +29,12 @@ typedef enum{
 	kEnd
 }StateMachineMoveForward;
 
-#define mTimer_ServoDefault (float)(-0.2)
-#define mTimer_SeuilDerive 60 //La valeur reste à definir avec les tests sur circuit.
-#define mTimer_MotorMaxSpeed 1
-#define mTimer_ServoMaxPosition (0.65)
-#define mTimer_ServoMinPosition (-0.95)
+#define kServoDefault (float)(-0.2)
+#define kSeuilDerive 60 //La valeur reste à definir avec les tests sur circuit.
+#define kMotorMaxSpeed 5500
+#define kServoMaxPosition (0.65)
+#define kServoMinPosition (-0.95)
+#define kMotorMaxSpeedCmd 1
 
 //-----------------------------------------------------------------------------
 // Speed Mes module setup
@@ -80,6 +81,8 @@ void mTimer_EnableHBridge(void);
 //---------------------------------------------------------------------------
 void mTimer_DisableHBridge(void);
 
-void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse);
+void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse, MotorSpeed aMotorSpeed);
+
+bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed);
 
 #endif

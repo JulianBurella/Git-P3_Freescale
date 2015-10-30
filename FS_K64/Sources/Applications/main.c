@@ -110,7 +110,7 @@ int main(void)
 	static UInt16 aStatus;
 	bool aRet;
 	Int8 aChar[2];
-	float aDuty=mTimer_ServoDefault;
+	float aDuty=kServoDefault;
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
@@ -347,18 +347,18 @@ int main(void)
 							if(mSwitch_ReadPushBut(kPushButSW1)==true)//Tourner à droite
 								{
 									aDuty+=0.05;
-									if(aDuty>mTimer_ServoMaxPosition)
+									if(aDuty>kServoMaxPosition)
 										{
-											aDuty=mTimer_ServoMaxPosition;
+											aDuty=kServoMaxPosition;
 										}
 									mTimer_SetServoDuty(0,aDuty);
 								}
 							else if(mSwitch_ReadPushBut(kPushButSW2)==true)//Tourner à gauche
 								{
 									aDuty-=0.05;
-									if(aDuty<mTimer_ServoMinPosition)
+									if(aDuty<kServoMinPosition)
 										{
-											aDuty=mTimer_ServoMinPosition;
+											aDuty=kServoMinPosition;
 										}
 									mTimer_SetServoDuty(0,aDuty);
 								}
@@ -381,10 +381,11 @@ int main(void)
 						else
 							{
 								//sIntTime=mAd_ReadCamera(kPot1);
-								mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
+								//mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
 							}
 						
 
+						//Quand j'active ce button la voiture va réguler et avancer
 						if(mSwitch_ReadSwitch(kSw4)){
 								//Faire une lecture de la caméra.
 								aValueIntegration = (mAd_Read(kPot1)+1)*3;
@@ -396,7 +397,7 @@ int main(void)
 										sImageDeriveTab[i] = abs(sImageTab[TabBegin+i*TabOffset]-sImageTab[TabBegin+i*TabOffset+TabOffset]);
 								}
 								
-								mTimer_MotorMoveStraight(sImageDeriveTab,110);
+								mTimer_MotorMoveStraight(sImageDeriveTab,129, aMotorSpeed);
 						}
 						
 						

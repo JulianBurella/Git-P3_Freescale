@@ -42,8 +42,8 @@ void mTimer_Setup(void)
 //-----------------------------------------------------------------------------
 void mTimer_Open(void)
 {
-	mTimer_SetServoDuty(0, mTimer_ServoDefault);
-	mTimer_SetServoDuty(1, mTimer_ServoDefault);
+	mTimer_SetServoDuty(0, kServoDefault);
+	mTimer_SetServoDuty(1, kServoDefault);
 	mTimer_SetMotorDuty(0 ,0);
 	// Enable des ponts en H
 	iDio_SetPort(kPortA,kMaskIo17,kIoOff);
@@ -107,15 +107,15 @@ void mTimer_DisableHBridge(void)
 //---------------------------------------------------------------------------
 // Fait aller le robot tout droit
 //---------------------------------------------------------------------------
-//Peut-être y balancer ce que la caméra à lue pour optimiser les temps
 /*
  * Inputs:
  * -	tabPicture: correspond au tableau contenant directement les dérivés de la lumière pour éviter tout traitement d'image
  * -	aSizeTabBrowser: correspond au nombre de cases à parcourir
  */
-void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE DOIS ENCORE réfléchir au paramètres
+//TODO JE DOIS ENCORE réfléchir aux paramètres
+void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse, MotorSpeed aMotorSpeed){
 		//Me permet de positioner ma voiture pour qu'elle aille le plus droit possible
-		static float sServoPosition = mTimer_ServoDefault; //Première fois que je vais dans la fonction je mets les roues droites
+		static float sServoPosition = kServoDefault; //Première fois que je vais dans la fonction je mets les roues droites
 		
 		//Va me permmetre de savoir où ce trouvent les deux lignes
 		Int16 aLeftLine=0;
@@ -123,7 +123,6 @@ void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE
 		Int16 aDifferenceWithCenter=0;
 		
 		//Pour contrôler que la lecture des deux lignes est correcte
-		//UInt8 aIndexLeftLine=0, aIndexRightLine=0;
 		bool aValidityLeftLine=false, aValidityRightLine=false;
 		
 		//Variables pour ma boucle de recherche des dérivées
@@ -135,7 +134,7 @@ void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE
 		for(i=3; (i<(aSizeTabBrowse)) && (aState != kEnd); i++){
 				switch(aState){
 				case kfindLeftLine:
-					if(tabPicture[i]>mTimer_SeuilDerive){
+					if(tabPicture[i]>kSeuilDerive){
 						aLeftLine = i+1;//Je compte à partir de 1!!!
 						
 						if((aLeftLine<(aSizeTabBrowse/2)) && (aLeftLine!=0)) aValidityLeftLine = true;
@@ -155,7 +154,7 @@ void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE
 					aState = kfindRightLine;
 					break;
 				case kfindRightLine:
-					if(tabPicture[i]>mTimer_SeuilDerive){
+					if(tabPicture[i]>kSeuilDerive){
 							aRightLine = i+1;
 							
 							if((aRightLine!=0) && (aRightLine>(aSizeTabBrowse/2))) aValidityRightLine=true;
@@ -189,20 +188,20 @@ void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE
 		//Si je ne vois que la ligne de gauche	
 		}else if(aValidityLeftLine==true){
 				//Je dois me déplacer vers la gauche
-				sServoPosition -= mTimer_ServoDefault*0.3;
+				sServoPosition -= kServoDefault*0.3;
 			//Si je ne vois que la ligne de droite			
 		}else if(aValidityRightLine==true){
-				sServoPosition += mTimer_ServoDefault*0.3;
+				sServoPosition += kServoDefault*0.3;
 		//Si je ne vois aucune ligne
 		}else{
-				sServoPosition = mTimer_ServoDefault;//Je fait aller la voiture tout droit
+				sServoPosition = kServoDefault;//Je fait aller la voiture tout droit
 		}
 		
 		//Contrôle des valeurs extrêmes pour éviter que le servo aille dans ses limites
-		if(sServoPosition > mTimer_ServoMaxPosition)
-			sServoPosition = mTimer_ServoMaxPosition;
-		else if(sServoPosition < mTimer_ServoMinPosition){
-			sServoPosition = mTimer_ServoMinPosition;
+		if(sServoPosition > kServoMaxPosition)
+			sServoPosition = kServoMaxPosition;
+		else if(sServoPosition <kServoMinPosition){
+			sServoPosition = kServoMinPosition;
 		}
 		
 		//Je mets les servos dans la position corrigée pour avancer tout droit
@@ -210,7 +209,7 @@ void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse){//TODO JE
 		
 		//Voir la nécessité de faire tourner les roues dans une vitesse différente que la vitesse maximale
 		//TODO Contrôler lequel des moteur tourne à vitesse max en négatif !!!
-		mTimer_SetMotorDuty(0, 0);
+		//mTimer_SetMotorDuty(0, 0);
 }
 
 //TODO terter à tout prix cette fonction !!!
@@ -223,7 +222,49 @@ static double mTimer_ForwardRegulationDirection(double aOldValuePosition, Int8 a
 		aSizeBeetwenTheLines = aSizeBeetwenTheLines==0?1:aSizeBeetwenTheLines;
 		double aPercentdifferenceWithCenter = aDifferenceWithCenter*(double)aPercentAreaBetweenLinesAndAreaTot/(double)aSizeBeetwenTheLines;
 		
-		double aNewValueServoPosition = (double)(aOldValuePosition*aPercentdifferenceWithCenter+mTimer_ServoDefault);
+		double aNewValueServoPosition = (double)(aOldValuePosition*aPercentdifferenceWithCenter+kServoDefault);
 			
 		return aNewValueServoPosition;
+}
+
+//---------------------------------------------------------------------------
+// permet de faire tourner les deux moteurs à la même vitesse
+// Fontion non-bloquante, donc plusieurs appels pour réguler la vitesse
+//---------------------------------------------------------------------------
+/*
+ * Inputs:
+ * -	aCmdVitesse: Correspond à la vitesse en pourcent à vouloir atteindre valeur entre (-100 -> 100)
+ * -	aMotorSpeed: Correspond à la vitesse des deux moteurs
+ * 
+ * Output:
+ * -	bool: Vrai si les deux moteurs tournent à la même vitesse
+ */
+bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed){
+		//Valeurs de la commande de la vitesse des moteurs.
+		static float aSpeedLeftCmd;
+		static float aSpeedRightCmd;
+		
+		//Sécurité
+		if(aCmdVitesse > 100)
+			aCmdVitesse = 100;
+		
+		if(aCmdVitesse < 0)
+			aCmdVitesse = 0;
+		
+		//La vitesse max est de 5500
+		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
+		if(aMotorSpeed.VitesseMoteurGauche < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
+				
+		}else if(aMotorSpeed.VitesseMoteurGauche > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
+				
+		}
+		
+		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
+		if(aMotorSpeed.VitesseMoteurDroite < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
+				
+		}else if(aMotorSpeed.VitesseMoteurDroite > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
+				
+		}
+		
+		return false;
 }
