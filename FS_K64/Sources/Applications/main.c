@@ -34,13 +34,13 @@ $History: $
 #include "math.h"
 
 //Définitions de tests
-#define TabBegin 25//11
+#define TabBegin 13
 #define TabOffset 1
 
 // Tableau contenant l'image (et diverses infos) de la camera
 // digitale, le tableau test est utilisé pour l'app Labview
-static UInt8 sImageTab[150];
-static UInt8 sImageDeriveTab[150];
+static UInt8 sImageTab[200];
+static UInt8 sImageDeriveTab[200];
 
 static UInt8 sUartMessage[200];
 
@@ -85,6 +85,7 @@ typedef struct
 	int temp;
 	int time;
 }CmdMenuStruct;
+
 static CmdMenuStruct sFrameRxWifi;
 static UInt8 *sFrameRxWifiPtr=(UInt8*)&sFrameRxWifi;
 static Int16 sDlyJava;
@@ -97,13 +98,6 @@ void ReadDataJava(void);
 
 // Init pour la comm de l'app JAVA
 void InitDataJava(void);
-
-//Add comment fort test of commit
-//Maybe not enough
-//I don't know if it is enough
-
-
-//Tests sur l'ordi de Loïc
 
 
 //-------------------------------------------------------------------------
@@ -120,7 +114,12 @@ int main(void)
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
-	//dernier test
+	
+	//Variable contenant la vitesse des moteurs
+	MotorSpeed aMotorSpeed;
+	
+	
+	
 	//--------------------------------------------------------------------
 	// Initialisation du protocole ST pour la comm wifi
 	//--------------------------------------------------------------------
@@ -251,6 +250,11 @@ int main(void)
 	// Pour le test Wifi JAVA
 	sDlyJava=mDelay_GetDelay(kPit1,100/kPit1Period);
 	
+	//Enclenchement de la lumière continuellement
+	// Set DAC 0 buffer output value, entre 0 et 4095 --> driver de LEDS
+	// Entre 0 et 100% --> 0 et 1.0
+	mDac_SetDac0Output(1.0);
+	
 	for(;;)
 		{	   	
 			//--------------------------------------------------------------------
@@ -328,11 +332,7 @@ int main(void)
 					// Moteur A = moteur gauche (tr/mn)--> valeur négative = en arrière, valeur pos=en avant
 					// Moteur B = moteur droite (tr/mn)
 					//-----------------------------------------------------------------------------
-					mTimer_GetSpeed(&sSpeedMotLeft,&sSpeedMotRight);
-					
-					// Set DAC 0 buffer output value, entre 0 et 4095 --> driver de LEDS
-					// Entre 0 et 100% --> 0 et 1.0
-					mDac_SetDac0Output(1.0);
+					mTimer_GetSpeed(&(aMotorSpeed.VitesseMoteurGauche),&(aMotorSpeed.VitesseMoteurDroite));
 					
 					// Selon la position des interrupteurs (interrupteur 2 et 3) on teste les poussoirs, le servo, les moteurs DC et la camera
 					if(mDelay_IsDelayDone(kPit1,sDly)==true)
@@ -364,7 +364,7 @@ int main(void)
 								}
 							else
 								{
-									aDuty=mTimer_ServoDefault;
+									//aDuty=mTimer_ServoDefault;
 									//mTimer_SetServoDuty(0,mTimer_ServoDefault);
 								}
 						
@@ -384,11 +384,19 @@ int main(void)
 								mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
 							}
 						
-						//Faire une lecture de la caméra.
-						aValueIntegration = (mAd_Read(kPot1)+1)*3;
+
 						if(mSwitch_ReadSwitch(kSw4)){
+								//Faire une lecture de la caméra.
+								aValueIntegration = (mAd_Read(kPot1)+1)*3;
+								
 								mSpi_MLX75306_StartIntegration(aValueIntegration);//Une valeur de 0 -> 6
 								mSpi_MLX75306_ReadPicture(sImageTab);
+								
+								for(i=0;i<129;i++){//142-13
+										sImageDeriveTab[i] = abs(sImageTab[TabBegin+i*TabOffset]-sImageTab[TabBegin+i*TabOffset+TabOffset]);
+								}
+								
+								mTimer_MotorMoveStraight(sImageDeriveTab,110);
 						}
 						
 						
@@ -425,7 +433,7 @@ int main(void)
 								 */
 
 								//On initialise le tableau avec une valeur // 11 = 8+3, le 8 3 vient que les 3 premiers bytes ne me servent à rien
-								sImageDeriveTab[0] =sImageTab[TabBegin]-sImageTab[TabBegin+TabOffset];
+								/*sImageDeriveTab[0] =sImageTab[TabBegin]-sImageTab[TabBegin+TabOffset];
 								//On initialise la le tableau pour envoyer le texte
 								sprintf(sUartMessage,"%3d", sImageDeriveTab[0]);
 								
@@ -440,40 +448,13 @@ int main(void)
 								
 								for(i=0; i<sizeof(sUartMessage); i++){
 										sUartMessage[i]='\0';
-								}
+								}			*/				
 								
-//								mTimer_MotorMoveStraight(sImageDeriveTab,110);
 								
-								mDelay_ReStart(kPit1,sDly,100/kPit1Period);
 						}
 						
-						
-						SendDataJava();
-						
-						// Start exposition à la lumière
-						//mSpi_MLX75306_StartIntegration_old(sIntTime);
-														
-						// Test de la caméra
-						//mSpi_MLX75306_ReadPictureTest(sImageTabTest);
-												 
-						/*mRs232_Uart4WriteString("\r\n");
-						mRs232_Uart4WriteString("L:");
-						
-						for(i=0;i<143;i++)
-							{
-								sprintf(aCharTab,"%X,",sImageTabTest[13+i]);
-								mRs232_Uart4WriteString(aCharTab);
-							}
-									
-						 for(i=0;i<143;i++)
-							 {
-								 sprintf(aCharTab,"%X",sImageTabTest[13+i]);
-								 mRs232_Uart4WriteString(aCharTab);
-								 if(i==143)
-									 mRs232_Uart4WriteString("\r\n");
-								 else
-									 mRs232_Uart4WriteString(",");
-							 }*/													
+							mDelay_ReStart(kPit1,sDly,100/kPit1Period);
+							SendDataJava();																			
 						}
 					}
 			}
