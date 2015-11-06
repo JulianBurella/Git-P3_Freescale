@@ -116,10 +116,10 @@ typedef struct{
 	float VitesseMoteurDroite;
 }MotorSpeed;
 
-
+//Structure pour la vitesse
 typedef struct{
-	float MotorCmdLeft;
 	float MotorCmdRight;
+	float MotorCmdLeft;
 }MotorCmd;
 
 void enable_irq (int irq);

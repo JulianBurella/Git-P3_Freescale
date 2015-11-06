@@ -83,6 +83,6 @@ void mTimer_DisableHBridge(void);
 
 void mTimer_MotorMoveStraight(UInt8* tabPicture, Int16 aSizeTabBrowse, MotorSpeed aMotorSpeed);
 
-bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed);
+bool mTimer_SetSameVitesseMotor(MotorCmd aCmd, MotorSpeed aMotorSpeed);
 
 #endif

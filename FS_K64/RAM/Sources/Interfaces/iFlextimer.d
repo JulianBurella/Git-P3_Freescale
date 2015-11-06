@@ -13,7 +13,9 @@ Sources/Interfaces/iFlextimer.o: ../Sources/Interfaces/iFlextimer.c \
  C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint \
  C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/limits_api.h \
  C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/ewl_lib_ext1.h \
- C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/wchar_t.h
+ C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/wchar_t.h \
+ ../Sources/Interfaces/../Interfaces/iPit.h \
+ ../Sources/Interfaces/../Interfaces/..\Utils\def.h
 
 C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/lib_c99.prefix:
 
@@ -46,3 +48,7 @@ C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/limits_api.h:
 C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/ewl_lib_ext1.h:
 
 C:/Freescale/CW\ MCU\ v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include/wchar_t.h:
+
+../Sources/Interfaces/../Interfaces/iPit.h:
+
+../Sources/Interfaces/../Interfaces/..\Utils\def.h:

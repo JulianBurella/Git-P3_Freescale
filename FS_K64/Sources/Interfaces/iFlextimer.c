@@ -19,6 +19,7 @@ $History: $
 
 #include "iFlextimer.h"
 #include "derivative.h"
+#include "../Interfaces/iPit.h"
 
 // FTM0 pour la commande des PWM des moteurs DC
 #define TFC_MOTOR_SWITCHING_FREQUENCY ((float)(20000.0))
@@ -41,6 +42,7 @@ static float sDeltaChL=0;
 static UInt16 sOldTimerValueChR;
 static float sDeltaChR=0;
 
+static int sDelayTimeoutSpeed;
 static float sSpeedLeft;
 static float sSpeedRight;
 static UInt32 sOverFlowCounterL;
@@ -250,18 +252,30 @@ void iFlextimer_Config(void)
 	FTM2_PWMLOAD |= FTM_PWMLOAD_LDOK_MASK;
 	
 	// Enable TPM1 IRQ on the NVIC
-	//enable_irq (INT_FTM2-16);                   
+	//enable_irq (INT_FTM2-16);      
+	
+	sDelayTimeoutSpeed = iPit_GetDelay(kPit1,1000); // 1s
+	
+	
 }
 
 //-----------------------------------------------------------------------------
-// Lecture de la vitesse de rotation des moteurs
+// Lecture de la vitesse de rotation des moteurs en tr/mn
 // Moteur A = moteur gauche --> valeur négative = en arrière, valeur pos=en avant
 // Moteur B = moteur droite
 //-----------------------------------------------------------------------------
 void iFlextimer_GetSpeed(float *aSpeedMotLeft, float *aSpeedMotRight)
 {
-	*aSpeedMotLeft=sSpeedLeft;
-	*aSpeedMotRight=sSpeedRight;
+	if(	iPit_IsDelayDone(kPit1,sDelayTimeoutSpeed))
+	{
+			*aSpeedMotLeft=0.0;
+			*aSpeedMotRight=0.0;
+	}
+	else
+	{
+			*aSpeedMotLeft=sSpeedLeft;
+			*aSpeedMotRight=sSpeedRight;
+	}
 }
 
 //------------------------------------------------------------
@@ -270,6 +284,8 @@ void iFlextimer_GetSpeed(float *aSpeedMotLeft, float *aSpeedMotRight)
 void FTM1_IRQHandler(void) 
 {
 	UInt32 aVal;
+	
+	iPit_ReStart(kPit1,sDelayTimeoutSpeed,1000);
 	
 	// Test si le compteur à fait un overflow
 	if((FTM1_SC&FTM_SC_TOF_MASK)==FTM_SC_TOF_MASK)
@@ -301,8 +317,8 @@ void FTM1_IRQHandler(void)
 					sDeltaChL=aVal-sOldTimerValueChL;
 				}
 			
-			// Calcul de la vitesse en tr/mn
-			sSpeedLeft=((kFreqTCNT/sDeltaChL)/(kNbPole*2))*60;
+			// Calcul de la vitesse en tr/sec
+			sSpeedLeft=((kFreqTCNT/sDeltaChL)/(kNbPole*2));  //* 60; pour tr/min
 			
 			// Test l'entrée B (PortA pin5) afin de déterminer le sens
 			if ((GPIOA_PDIR&0x20)==0x0)
@@ -335,8 +351,8 @@ void FTM1_IRQHandler(void)
 						sDeltaChR=aVal-sOldTimerValueChR;
 					}
 				
-				// Calcul de la vitesse en tr/mn
-				sSpeedRight=((kFreqTCNT/sDeltaChR)/(kNbPole*2))*60;
+				// Calcul de la vitesse en tr/sec
+				sSpeedRight=((kFreqTCNT/sDeltaChR)/(kNbPole*2));  //* 60; pour tr/min
 				
 				// Test l'entrée B (PortA pin5) afin de déterminer le sens
 				// A vérifier, pas encore testé!
