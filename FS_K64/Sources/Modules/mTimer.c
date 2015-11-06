@@ -34,6 +34,7 @@ void mTimer_Setup(void)
 	
 	// Pin direction et enable du pont en H en sortie
 	iDio_SetPortDirection(kPortA,kMaskIo15+kMaskIo16+kMaskIo17,kIoOutput);
+	iDio_SetPortDirection(kPortB,kMaskIo9,kIoOutput);
 	
 }
 
@@ -47,6 +48,7 @@ void mTimer_Open(void)
 	mTimer_SetMotorDuty(0 ,0);
 	// Enable des ponts en H
 	iDio_SetPort(kPortA,kMaskIo17,kIoOff);
+	iDio_SetPort(kPortB,kMaskIo9,kIoOn);
 }
 
 //-----------------------------------------------------------------------------
@@ -253,24 +255,27 @@ bool mTimer_SetSameVitesseMotor(float aCmdVitesse, MotorSpeed aMotorSpeed){
 		if(aCmdVitesse < 0)
 			aCmdVitesse = 0;
 		
+		
+		float tmp1 = ((kMotorMaxSpeed-55.)*aCmdVitesse/100.)-aMotorSpeed.VitesseMoteurGauche;
+		float tmp2 = ((kMotorMaxSpeed-55.)*aCmdVitesse/100.)-aMotorSpeed.VitesseMoteurDroite;
 		//Moteur Gauche
 		//La vitesse max est de 5500
 		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
-		if(aMotorSpeed.VitesseMoteurGauche < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
-				aSpeedLeftCmd += ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurGauche))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+		if(aMotorSpeed.VitesseMoteurGauche < (((kMotorMaxSpeed-55.)*aCmdVitesse/100.))){ //Plus petit que 1% en positif
+				aSpeedLeftCmd += tmp1*kMotorMaxSpeedCmd/kMotorMaxSpeed;
 				valueReturn = false;
-		}else if(aMotorSpeed.VitesseMoteurGauche > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
-				aSpeedLeftCmd -= ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurGauche))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+		}else if(aMotorSpeed.VitesseMoteurGauche > (((kMotorMaxSpeed-55.)*aCmdVitesse/100.))){ //Plus grand que 1% en positif
+				aSpeedLeftCmd -= -1*tmp1*kMotorMaxSpeedCmd/kMotorMaxSpeed;
 				valueReturn = false;
 		}else 
 			valueReturn = (true==valueReturn)?true:false;//Contrôle que la variable ne soit pas false d'avant
 			
 		//Moteur Droite
 		//Je vais contrôler si ma valeur est à +- 1% de la vitesse désirée
-		if(aMotorSpeed.VitesseMoteurDroite < ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus petit que 1% en positif
-				aSpeedRightCmd += ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurDroite))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
-		}else if(aMotorSpeed.VitesseMoteurDroite > ((kMotorMaxSpeed*aCmdVitesse/100.)-55)){ //Plus grand que 1% en positif
-				aSpeedRightCmd -= ((abs((kMotorMaxSpeed*aCmdVitesse/100.)-55.)-aMotorSpeed.VitesseMoteurDroite))*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+		if(aMotorSpeed.VitesseMoteurDroite < (((kMotorMaxSpeed-55.)*aCmdVitesse/100.))){ //Plus petit que 1% en positif
+				aSpeedRightCmd += tmp2*kMotorMaxSpeedCmd/kMotorMaxSpeed;
+		}else if(aMotorSpeed.VitesseMoteurDroite > (((kMotorMaxSpeed-55.)*aCmdVitesse/100.))){ //Plus grand que 1% en positif
+				aSpeedRightCmd -= -1*tmp2*kMotorMaxSpeedCmd/kMotorMaxSpeed;
 		}else
 			valueReturn = (true==valueReturn)?true:false;//Contrôle que la variable ne soit pas false d'avant
 		

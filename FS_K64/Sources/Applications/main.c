@@ -347,9 +347,9 @@ int main(void)
 							if(mSwitch_ReadPushBut(kPushButSW1)==true)//Tourner à droite
 								{
 									sServo_Angle+=0.05;
-									if(sServo_Angle>kServoMinPosition)
+									if(sServo_Angle>kServoMaxPosition)
 										{
-											sServo_Angle=kServoMinPosition;
+											sServo_Angle=kServoMaxPosition;
 										}
 									mTimer_SetServoDuty(0,sServo_Angle);
 								}

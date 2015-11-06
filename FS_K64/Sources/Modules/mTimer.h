@@ -29,12 +29,12 @@ typedef enum{
 	kEnd
 }StateMachineMoveForward;
 
-#define kServoDefault (float)(-0.2)
+#define kServoDefault (float)(0)
 #define kSeuilDerive 60 //La valeur reste à definir avec les tests sur circuit.
-#define kMotorMaxSpeed 5500
-#define kServoMaxPosition (0.65)
-#define kServoMinPosition (-0.95)
-#define kMotorMaxSpeedCmd 1
+#define kMotorMaxSpeed 5500.
+#define kServoMaxPosition (0.9)
+#define kServoMinPosition (-0.85)
+#define kMotorMaxSpeedCmd 1.
 
 //-----------------------------------------------------------------------------
 // Speed Mes module setup
