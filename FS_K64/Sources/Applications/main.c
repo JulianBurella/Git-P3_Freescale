@@ -376,12 +376,14 @@ int main(void)
 								// Test des moteurs
 								// Pot2 moteur droit
 								// Pot1 moteur gauche 
-								mTimer_SetSameVitesseMotor((mAd_Read(kPot1)+1)*50., sMotorSpeed);
+								
+								mTimer_SetMotorDuty(mAd_Read(kPot1),mAd_Read(kPot2));
+								//mTimer_SetSameVitesseMotor((mAd_Read(kPot1)+1)*50., sMotorSpeed);
 							}
 						else
 							{
 								//sIntTime=mAd_ReadCamera(kPot1);
-								//mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
+								mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
 							}
 						
 
