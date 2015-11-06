@@ -103,7 +103,7 @@ void InitDataJava(void);
 	MotorSpeed sMotorSpeed;
 
 	//Variable contenant l'angle du Servo entre -0.95 et 0.65
-	float sServo_Angle=mTimer_ServoDefault;
+	float sServo_Angle=kServoDefault;
 
 //-------------------------------------------------------------------------
 // Programme principal
@@ -118,6 +118,7 @@ int main(void)
 	float aValueIntegration;
 	Int8 aCharTab[50];
 	static UInt16 sIntTime=25000;
+	
 	
 	//--------------------------------------------------------------------
 	// Initialisation du protocole ST pour la comm wifi
@@ -331,7 +332,7 @@ int main(void)
 					// Moteur A = moteur gauche (tr/mn)--> valeur négative = en arrière, valeur pos=en avant
 					// Moteur B = moteur droite (tr/mn)
 					//-----------------------------------------------------------------------------
-					mTimer_GetSpeed(&(sMotorSpeed.VitesseMoteurGauche),&(sMotorSpeed.VitesseMoteurDroite));
+					
 					
 					// Selon la position des interrupteurs (interrupteur 2 et 3) on teste les poussoirs, le servo, les moteurs DC et la camera
 					if(mDelay_IsDelayDone(kPit1,sDly)==true)
@@ -339,16 +340,16 @@ int main(void)
 							// Test des LEDS
 							mLeds_Toggle(kMaskLed1+kMaskLed2+kMaskLed3+kMaskLed4);
 							
-							
+							mTimer_GetSpeed(&(sMotorSpeed.VitesseMoteurGauche),&(sMotorSpeed.VitesseMoteurDroite));
 							
 							// Tests des servo
 							// Les 2 boutons poussoirs permettent de bouger dans un sens et dans l'autre
 							if(mSwitch_ReadPushBut(kPushButSW1)==true)//Tourner à droite
 								{
 									sServo_Angle+=0.05;
-									if(sServo_Angle>kServoMinPosition)
+									if(sServo_Angle>kServoMaxPosition)
 										{
-											sServo_Angle=kServoMinPosition;
+											sServo_Angle=kServoMaxPosition;
 										}
 									mTimer_SetServoDuty(0,sServo_Angle);
 								}
@@ -375,14 +376,15 @@ int main(void)
 								// Test des moteurs
 								// Pot2 moteur droit
 								// Pot1 moteur gauche 
-								mTimer_SetMotorDuty( mAd_Read(kPot2),mAd_Read(kPot1));//mAd_Read(kPot1)
+								
+								mTimer_SetMotorDuty(mAd_Read(kPot1),mAd_Read(kPot2));
+								//mTimer_SetSameVitesseMotor((mAd_Read(kPot1)+1)*50., sMotorSpeed);
 							}
 						else
 							{
 								//sIntTime=mAd_ReadCamera(kPot1);
-								//mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
+								mTimer_SetMotorDuty( 0, 0);//mAd_Read(kPot1)
 							}
-						
 						
 
 						//Quand j'active ce button la voiture va réguler et avancer
@@ -393,12 +395,11 @@ int main(void)
 								mSpi_MLX75306_StartIntegration(aValueIntegration);//Une valeur de 0 -> 6
 								mSpi_MLX75306_ReadPicture(sImageTab);
 								
-								
 								for(i=0;i<129;i++){//142-13
 										sImageDeriveTab[i] = abs(sImageTab[TabBegin+i*TabOffset]-sImageTab[TabBegin+i*TabOffset+TabOffset]);
 								}
 								
-								mTimer_MotorMoveStraight(sImageDeriveTab,129, aMotorSpeed);
+								mTimer_MotorMoveStraight(sImageDeriveTab,129, sMotorSpeed);
 						}
 						
 						
