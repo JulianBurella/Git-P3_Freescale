@@ -43,8 +43,8 @@ static UInt16 sOldTimerValueChR;
 static float sDeltaChR=0;
 
 static int sDelayTimeoutSpeed;
-static float sSpeedLeft;
-static float sSpeedRight;
+static float sSpeedLeft=0;
+static float sSpeedRight=0;
 static UInt32 sOverFlowCounterL;
 static UInt32 sOverFlowCounterR;
 
@@ -254,7 +254,7 @@ void iFlextimer_Config(void)
 	// Enable TPM1 IRQ on the NVIC
 	//enable_irq (INT_FTM2-16);      
 	
-	sDelayTimeoutSpeed = iPit_GetDelay(kPit1,1000); // 1s
+	sDelayTimeoutSpeed = iPit_GetDelay(kPit1,100); 
 	
 	
 }
@@ -285,7 +285,7 @@ void FTM1_IRQHandler(void)
 {
 	UInt32 aVal;
 	
-	iPit_ReStart(kPit1,sDelayTimeoutSpeed,1000);
+	iPit_ReStart(kPit1,sDelayTimeoutSpeed,100);
 	
 	// Test si le compteur à fait un overflow
 	if((FTM1_SC&FTM_SC_TOF_MASK)==FTM_SC_TOF_MASK)

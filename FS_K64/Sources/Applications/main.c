@@ -53,8 +53,20 @@ float sRoll;	// en degrés
 float sPitch;	// en degrés
 
 // Mesure de vitesse et de sens
-float sSpeedMotLeft;
-float sSpeedMotRight;
+float sSpeedMotLeft =0.0;
+float sSpeedMotRight = 0.0;
+
+
+
+//Variable contenant la vitesse des moteurs
+MotorSpeed sMotorSpeed = {0.0,0.0};
+MotorCmd sMotorConsi = {0.0,0.0};
+
+MotorCmd sMotorRegu = {0.0,0.0};
+
+//Variable contenant l'angle du Servo entre -0.95 et 0.65
+float sServo_Angle=kServoDefault;
+
 
 //-------------------------------------------------------------------------
 // Variables et constantes utiles au monitoring
@@ -98,12 +110,6 @@ void ReadDataJava(void);
 
 // Init pour la comm de l'app JAVA
 void InitDataJava(void);
-
-	//Variable contenant la vitesse des moteurs
-	MotorSpeed sMotorSpeed;
-
-	//Variable contenant l'angle du Servo entre -0.95 et 0.65
-	float sServo_Angle=kServoDefault;
 
 //-------------------------------------------------------------------------
 // Programme principal
@@ -376,9 +382,14 @@ int main(void)
 								// Test des moteurs
 								// Pot2 moteur droit
 								// Pot1 moteur gauche 
+								sMotorConsi.MotorCmdLeft = -50;//(mAd_Read(kPot1))*50.0;
+								sMotorConsi.MotorCmdRight = 50;// (mAd_Read(kPot2))*50.0;
 								
-								mTimer_SetMotorDuty(mAd_Read(kPot1),mAd_Read(kPot2));
-								//mTimer_SetSameVitesseMotor((mAd_Read(kPot1)+1)*50., sMotorSpeed);
+								mTimer_GetSpeed(&sMotorSpeed.VitesseMoteurGauche,&sMotorSpeed.VitesseMoteurDroite);
+								
+								//mTimer_SetMotorDuty(mAd_Read(kPot1),mAd_Read(kPot2));
+								
+								mTimer_SetSameVitesseMotor(sMotorConsi, sMotorSpeed);
 							}
 						else
 							{
@@ -734,14 +745,14 @@ void SendDataJava(void)
 			// 2e frame avec l'image
 			sFrameTxJava2.SpeedLeft= sMotorSpeed.VitesseMoteurGauche;
 			sFrameTxJava2.SpeedRight= sMotorSpeed.VitesseMoteurDroite;
-			sFrameTxJava2.ConsSpeedLeft=1050;
-			sFrameTxJava2.ConsSpeedRight=1060;
+			sFrameTxJava2.ConsSpeedLeft=sMotorConsi.MotorCmdLeft;
+			sFrameTxJava2.ConsSpeedRight=sMotorConsi.MotorCmdRight;
 			sFrameTxJava2.ConsServo=sServo_Angle;
-			sFrameTxJava2.ConsLed=12000;
-			sFrameTxJava2.ResFloat1=109.9;
-			sFrameTxJava2.ResFloat2=111.1;
-			sFrameTxJava2.ResInt161=10111;
-			sFrameTxJava2.ResInt162=10222;
+			sFrameTxJava2.ConsLed=0;
+			sFrameTxJava2.ResFloat1=sMotorRegu.MotorCmdLeft;
+			sFrameTxJava2.ResFloat2=sMotorRegu.MotorCmdRight;
+			sFrameTxJava2.ResInt161=0;
+			sFrameTxJava2.ResInt162=0;
 			for(i=0;i<143;i++)
 				{
 					sFrameTxJava2.ImageTab[i]= sImageTab[i+13];

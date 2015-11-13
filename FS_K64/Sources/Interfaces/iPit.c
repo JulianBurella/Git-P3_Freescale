@@ -61,7 +61,7 @@ void iPit_Config(PitEnum aPit,UInt16 aPeriodeMs)
 		{
 			// Counting value to do the delay
 			// Counting Value=Delay Time/(1/Core clock)
-			aTmp=aPeriodeMs/(1/kClockCpu)*1000;
+			aTmp=aPeriodeMs/(1/kClockCpukHz);
 			// K10 Sub-Family Reference Manual, Rev. 6, Nov 2011 page 1017
 			// Timer Load Value Register (PIT_LDVALn)
 			PIT_LDVAL0=aTmp;
@@ -95,7 +95,7 @@ void iPit_Config(PitEnum aPit,UInt16 aPeriodeMs)
 		{
 			// Counting value to do the delay
 			// Counting Value=Delay Time/(1/Core clock)
-			aTmp=aPeriodeMs/(1/kClockCpu)*1000;
+			aTmp=aPeriodeMs/(1/kClockCpukHz);
 			// K10 Sub-Family Reference Manual, Rev. 6, Nov 2011 page 1017
 			// Timer Load Value Register (PIT_LDVALn)
 			PIT_LDVAL2=aTmp;

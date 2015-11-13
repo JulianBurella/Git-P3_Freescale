@@ -27,8 +27,8 @@ $History: $
 //------------------------------------------------------------
 // Core clock
 #define kClockCpu 				100.0 			// 100MHz
-#define kClockCpukHz 			100000 			// 100MHz
-#define kClockPeriphkHz 	50000 			// 50MHz
+#define kClockCpukHz 			100000.0 			// 100MHz
+#define kClockPeriphkHz 	50000.0 			// 50MHz
 #define CORE_CLOCK		(100000000)	
 #define PERIPHERAL_BUS_CLOCK 	(CORE_CLOCK/2)
 
