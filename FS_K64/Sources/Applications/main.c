@@ -382,8 +382,8 @@ int main(void)
 								// Test des moteurs
 								// Pot2 moteur droit
 								// Pot1 moteur gauche 
-								sMotorConsi.MotorCmdLeft = -50;//(mAd_Read(kPot1))*50.0;
-								sMotorConsi.MotorCmdRight = 50;// (mAd_Read(kPot2))*50.0;
+								sMotorConsi.MotorCmdLeft = 50 ;//(mAd_Read(kPot2))*100.0;
+								sMotorConsi.MotorCmdRight = 50;//(mAd_Read(kPot1))*100.0;
 								
 								mTimer_GetSpeed(&sMotorSpeed.VitesseMoteurGauche,&sMotorSpeed.VitesseMoteurDroite);
 								

@@ -5,6 +5,6 @@
 ################################################################################
 
 export GNU_Make_Install_DirEnv=$(CWInstallLocationEnv)/gnu/bin
-export ProjDirPath=C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64
+export ProjDirPath=C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64
 export CWInstallLocationEnv=C:/Freescale/CW MCU v10.6
 export ARMSourceryDirEnv=$(CWInstallLocationEnv)/Cross_Tools/arm-none-eabi-gcc-4_7_3/bin

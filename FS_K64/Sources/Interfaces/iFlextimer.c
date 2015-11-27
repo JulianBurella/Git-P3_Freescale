@@ -254,7 +254,7 @@ void iFlextimer_Config(void)
 	// Enable TPM1 IRQ on the NVIC
 	//enable_irq (INT_FTM2-16);      
 	
-	sDelayTimeoutSpeed = iPit_GetDelay(kPit1,100); 
+	sDelayTimeoutSpeed = iPit_GetDelay(kPit1,500); 
 	
 	
 }
@@ -285,7 +285,7 @@ void FTM1_IRQHandler(void)
 {
 	UInt32 aVal;
 	
-	iPit_ReStart(kPit1,sDelayTimeoutSpeed,100);
+	iPit_ReStart(kPit1,sDelayTimeoutSpeed,500);
 	
 	// Test si le compteur à fait un overflow
 	if((FTM1_SC&FTM_SC_TOF_MASK)==FTM_SC_TOF_MASK)

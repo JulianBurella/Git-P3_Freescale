@@ -5,13 +5,13 @@
 -g3
 -gdwarf-2
 -gstrict-dwarf
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Project_Headers"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Sources/Applications"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Sources/Interfaces"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Sources/Modules"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Sources/Utils"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Sources"
--I"C:/Users/julian.burellap/Desktop/Ecole/Git/Git/Git_Julian/FS_K64/Project_Settings/Startup_Code"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Project_Headers"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Sources/Applications"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Sources/Interfaces"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Sources/Modules"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Sources/Utils"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Sources"
+-I"C:/Users/loic.andre.EISI/git/Git-P3/Git-P3_Freescale/FS_K64/Project_Settings/Startup_Code"
 -I"C:/Freescale/CW MCU v10.6/MCU/ARM_GCC_Support/ewl/EWL_C/include"
 -I"C:/Freescale/CW MCU v10.6/MCU/ARM_GCC_Support/ewl/EWL_Runtime/include"
 -O0
